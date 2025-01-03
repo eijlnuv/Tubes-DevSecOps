@@ -2,25 +2,24 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      nodejs: 14  # Versi Node.js yang ingin digunakan
     commands:
       - echo Installing dependencies
-      - npm install  # Menginstal dependensi aplikasi
+      - sudo yum update -y
+      - sudo yum install -y php php-mysqlnd  # Install PHP dan driver MySQL (jika perlu)
+      - sudo systemctl enable httpd  # Aktifkan service Apache/httpd
   pre_build:
     commands:
       - echo Pre-build phase
+      # Opsional, bisa tambahkan perintah lain seperti konfigurasi
   build:
     commands:
       - echo Building the application
-      - npm run build  # Menjalankan perintah build aplikasi
+      - echo "No build steps needed for PHP" # Tidak ada proses build spesifik untuk PHP
+      - chmod -R 777 . # Set permission agar dapat diakses public
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Deploying to S3
-      - aws s3 sync ./build s3://tubesdso   # Menyinkronkan hasil build ke bucket S3
-
+      - echo Deployment stage
+      - aws s3 sync . s3://tubesdso --delete # Sync seluruh isi direktori ke S3
 artifacts:
   files:
-    - '**/*'  # Menyertakan semua file dalam artefak build
-  base-directory: build  # Direktori tempat artefak build berada 
+    - '**/*'  # Semua file akan disertakan sebagai artefak
