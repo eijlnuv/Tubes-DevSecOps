@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14  # Versi Node.js yang ingin digunakan
+    commands:
+      - echo Installing dependencies
+      - npm install  # Menginstal dependensi aplikasi
+  pre_build:
+    commands:
+      - echo Pre-build phase
+  build:
+    commands:
+      - echo Building the application
+      - npm run build  # Menjalankan perintah build aplikasi
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Deploying to S3
+      - aws s3 sync ./build s3://tubesdso   # Menyinkronkan hasil build ke bucket S3
+
+artifacts:
+  files:
+    - '**/*'  # Menyertakan semua file dalam artefak build
+  base-directory: build  # Direktori tempat artefak build berada 
